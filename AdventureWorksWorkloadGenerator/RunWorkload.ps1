@@ -25,7 +25,8 @@ $runWorkloadScriptBlock = {
     param(
         [string]$conString,
         [string[]]$Queries,
-        [int]$sleepIntervalMs
+        [int]$sleepIntervalMs,
+        [bool]$logExecutions=$false
     )
 
     while($true) {
@@ -49,19 +50,22 @@ $runWorkloadScriptBlock = {
             $con.Dispose()
         }
 
-        $querySampleChars = [Math]::Min($Query.Length, 250)
-        Write-Host "Executed: $($Query.Substring(0, $querySampleChars))"
+        if($logExecutions) {
+            $querySampleChars = [Math]::Min($Query.Length, 250)
+            Write-Host "Executed: $($Query.Substring(0, $querySampleChars))"
+        }
         
         Start-Sleep -Milliseconds $sleepIntervalMs
     }
 }
 
 if($parallelism -eq 1) {
-    Invoke-Command -ScriptBlock $runWorkloadScriptBlock -ArgumentList $conString, $Queries, $sleepIntervalMs
+    $log=$true
+    Invoke-Command -ScriptBlock $runWorkloadScriptBlock -ArgumentList $conString, $Queries, $sleepIntervalMs, $log
 }
 else {
     for($i = 0; $i -lt $parallelism; $i++) {
-        Start-Job -ScriptBlock $runWorkloadScriptBlock -ArgumentList $conString, $Queries
+        Start-Job -ScriptBlock $runWorkloadScriptBlock -ArgumentList $conString, $Queries, $sleepIntervalMs
     }
 }
 

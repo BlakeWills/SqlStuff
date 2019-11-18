@@ -21,6 +21,8 @@ You can tune the aggressiveness by increasing parallelism and reducing sleepInte
 
 For best results, run the workload generator on a different server.
 
+Note: If `parallelism` = 1, the script will run in the foreground, meaning `ctrl+c` to stop. If parallelism is greater than 1, _n_ number of powershell jobs will be created. You can stop the jobs by running `Get-Job | Stop-Job`.
+
 ## Extending
 
 You can add your own scripts by simply appending them to the `AdventureWorks2017BOLWorkload.sql` file. Ensure each script is seperated with `---------`.
